@@ -1,38 +1,39 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
-PortSystem      1.0
+PortSystem              1.0
 
-name            boxbackup
-version         0.11.1
-revision        4
-categories      sysutils net
-license         BSD-old
-maintainers     {ecronin @ecronin} openmaintainer
-description     completely automatic on-line backup system.
-long_description    The backup daemon, bbackupd, runs on all machines to \
-                    be backed up. The store server daemon, bbstored runs \
-                    on a central server. Data is sent to the store \
-                    server, which stores all data on local filesystems, \
-                    that is, only on local hard drives. Tape or other \
-                    archive media is not used. \
-                    The system is designed to be easy to set up and run, \
-                    and cheap to use. Once set up, there should be no \
-                    need for user or administrative intervention, apart \
-                    from usual system maintenance.
-homepage        http://www.boxbackup.org/
-master_sites    ${homepage}svn/box/packages/
-extract.suffix  .tgz
-checksums       rmd160  17553b3ff06d19f353dbadc0166b7dceaa11c271 \
-                sha256  1328b010477259c4767276dbfebab6580e883336cc9d25696c39991b09cc6d32
+name                    boxbackup
+version                 0.11.1
+revision                4
+categories              sysutils net
+license                 BSD-old
+maintainers             {ecronin @ecronin} openmaintainer
 
-depends_lib     path:bin/perl:perl5 path:lib/libssl.dylib:openssl port:libedit
+description             completely automatic on-line backup system.
+long_description        The backup daemon, bbackupd, runs on all machines to \
+                        be backed up. The store server daemon, bbstored runs \
+                        on a central server. Data is sent to the store \
+                        server, which stores all data on local filesystems, \
+                        that is, only on local hard drives. Tape or other \
+                        archive media is not used. \
+                        The system is designed to be easy to set up and run, \
+                        and cheap to use. Once set up, there should be no \
+                        need for user or administrative intervention, apart \
+                        from usual system maintenance.
+homepage                http://www.boxbackup.org/
+master_sites            ${homepage}svn/box/packages/
+extract.suffix          .tgz
+checksums               rmd160  17553b3ff06d19f353dbadc0166b7dceaa11c271 \
+                        sha256  1328b010477259c4767276dbfebab6580e883336cc9d25696c39991b09cc6d32
 
-configure.args      --sysconfdir=${prefix}/etc \
-                    --localstatedir=${prefix}/var/bbackupd \
-                    --mandir=${prefix}/share/man
+depends_lib             path:bin/perl:perl5 path:lib/libssl.dylib:openssl port:libedit
 
-use_parallel_build  no
-build.type bsd
+configure.args          --sysconfdir=${prefix}/etc \
+                        --localstatedir=${prefix}/var/bbackupd \
+                        --mandir=${prefix}/share/man
+
+use_parallel_build      no
+build.type              bsd
 
 post-patch {
     reinplace "s|man/man|share/man/man|g" \
@@ -48,9 +49,9 @@ post-patch {
         ${worksrcpath}
 }
 
-destroot.target     install-backup-client
-destroot.keepdirs   ${destroot}${prefix}/etc/boxbackup/bbackupd \
-                    ${destroot}${prefix}/var/bbackupd
+destroot.target         install-backup-client
+destroot.keepdirs       ${destroot}${prefix}/etc/boxbackup/bbackupd \
+                        ${destroot}${prefix}/var/bbackupd
 
 post-destroot {
     xinstall -d -m 0700 ${destroot}${prefix}/etc/boxbackup/bbackupd
@@ -108,7 +109,7 @@ post-activate {
     }
 }
 
-test.run        yes
+test.run                yes
 
 platform darwin {
     startupitem.create          yes
