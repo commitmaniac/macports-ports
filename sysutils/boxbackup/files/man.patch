@@ -1,0 +1,12 @@
+diff -urN a/infrastructure/makeparcels.pl.in b/infrastructure/makeparcels.pl.in
+--- a/infrastructure/makeparcels.pl.in	2013-09-28 19:51:24.000000000 -0400
++++ b/infrastructure/makeparcels.pl.in	2026-02-20 21:34:03.282266530 -0500
+@@ -310,7 +310,7 @@
+ 		if ($type eq 'man')
+ 		{
+ 			$name =~ /([0-9])$/;
+-			$dest = "man/man$1";
++			$dest = "share/man/man$1";
+ 			$name =~ s/$/\.gz/;
+ 		}
+ 
