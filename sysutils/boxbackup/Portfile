@@ -1,12 +1,14 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem              1.0
+PortGroup               github 1.0
+PortGroup               openssl 1.0
 
-name                    boxbackup
-version                 0.11.1
-revision                4
+github.setup            boxbackup boxbackup 0.12
+github.tarball_from     archive
+revision                0
 categories              sysutils net
-license                 BSD-old
+license                 {BSD GPL-2}
 maintainers             {ecronin @ecronin} openmaintainer
 
 description             completely automatic on-line backup system.
@@ -20,28 +22,33 @@ long_description        The backup daemon, bbackupd, runs on all machines to \
                         and cheap to use. Once set up, there should be no \
                         need for user or administrative intervention, apart \
                         from usual system maintenance.
-homepage                http://www.boxbackup.org/
-master_sites            ${homepage}svn/box/packages/
-extract.suffix          .tgz
-checksums               rmd160  17553b3ff06d19f353dbadc0166b7dceaa11c271 \
-                        sha256  1328b010477259c4767276dbfebab6580e883336cc9d25696c39991b09cc6d32
 
-depends_lib             path:bin/perl:perl5 path:lib/libssl.dylib:openssl port:libedit
+homepage                https://www.boxbackup.org/
 
-configure.args          --sysconfdir=${prefix}/etc \
+checksums               rmd160  1b602d7e3446e55ef17077524b1abaae0b5466b5 \
+                        sha256  721f68ae4d6c7f7483537b8e2a37535c1340bfdf2af1afd2496cc674789cd418 \
+                        size    2058734
+
+depends_build-append    port:autoconf \
+                        port:automake \
+                        port:libtool
+
+depends_lib-append      path:bin/perl:perl5 \
+                        port:libedit
+
+openssl.branch          1.0
+
+configure.cmd           ./bootstrap && ./configure
+configure.args-append   --sysconfdir=${prefix}/etc \
                         --localstatedir=${prefix}/var/bbackupd \
                         --mandir=${prefix}/share/man
 
 use_parallel_build      no
 build.type              bsd
 
-post-patch {
-    reinplace "s|man/man|share/man/man|g" \
-        ${worksrcpath}/infrastructure/makeparcels.pl.in
-}
+patch.pre_args-replace  -p0 -p1
+patchfiles              man.patch
 
-# Update config.guess and config.sub to be able to build on arm64.
-depends_build-append    port:automake
 post-patch {
     set automake_dirs [glob -directory ${prefix}/share automake-*]
     set automake_dir [lindex [lsort -command vercmp $automake_dirs] end]
@@ -54,20 +61,20 @@ destroot.keepdirs       ${destroot}${prefix}/etc/boxbackup/bbackupd \
                         ${destroot}${prefix}/var/bbackupd
 
 post-destroot {
-    xinstall -d -m 0700 ${destroot}${prefix}/etc/boxbackup/bbackupd
-    xinstall -d -m 0755 ${destroot}${prefix}/var/bbackupd
+    xinstall -d ${destroot}${prefix}/etc/boxbackup/bbackupd
+    xinstall -d ${destroot}${prefix}/var/bbackupd
 
     # Install the documentation
-    xinstall -d -m 0755 ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${prefix}/share/doc/${name}
     file copy {*}[glob ${worksrcpath}/docs/htmlguide/*] \
         ${destroot}${prefix}/share/doc/${name}/
 }
 
 variant bdb description {Use Berkeley Data Base to cache bbackupd state} {
-    depends_lib-append      port:db47
+    depends_lib-append      port:db48
 
-    configure.args-append   --with-bdb-headers=${prefix}/include/db47 \
-                            --with-bdb-lib=${prefix}/lib/db47
+    configure.args-append   --with-bdb-headers=${prefix}/include/db48 \
+                            --with-bdb-lib=${prefix}/lib/db48
 }
 
 variant server description {Install bbstored server} {
